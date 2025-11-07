@@ -211,4 +211,65 @@ document.querySelectorAll('.add-tech-btn').forEach(btn => {
         });
     });
 });
+// ---- AJOUT DYNAMIQUE DU NAGEUR À LA LISTE ----
+
+document.getElementById("saveSwimmerBtn")?.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    // Récupère les infos du formulaire
+    var name = document.getElementById("swimmerName").value.trim();
+    var group = document.getElementById("swimmerGroup").value;
+    var crawlScore = parseFloat(document.getElementById("crawlScore").value) || 0;
+    var dosScore = parseFloat(document.getElementById("dosScore").value) || 0;
+    var brasseScore = parseFloat(document.getElementById("brasseScore").value) || 0;
+    var papillonScore = parseFloat(document.getElementById("papillonScore").value) || 0;
+
+    // Calcul du score moyen
+    var scores = [crawlScore, dosScore, brasseScore, papillonScore];
+    var validScores = scores.filter(s => !isNaN(s) && s > 0);
+    var avgScore = validScores.length ? (validScores.reduce((a,b) => a+b, 0)/validScores.length).toFixed(1) : "";
+
+    // Couleur du score
+    var scoreClass = "score-medium";
+    if (avgScore >= 7) scoreClass = "score-high";
+    else if (avgScore < 5) scoreClass = "score-low";
+
+    // Nom du groupe affiché
+    var groupLabel = "Compétition";
+    if (group === "pre-competition") groupLabel = "Pré-compétition";
+    if (group === "apprentissage") groupLabel = "Apprentissage";
+
+    // Trouve le bloc du bon groupe
+    var bloc;
+    document.querySelectorAll(".swimmer-group").forEach(function(el) {
+        if (el.querySelector(".group-title").textContent.includes(groupLabel)) {
+            bloc = el;
+        }
+    });
+
+    if (name && bloc) {
+        // Créer le nageur
+        var div = document.createElement("div");
+        div.className = "swimmer-item";
+        div.innerHTML = `<span>${name}</span>
+            <span class="score-display ${scoreClass}">${avgScore}</span>`;
+        // Option: ajoute un nouvel id data-id ou logic pour sélection/édition, etc.
+        // Ajoute à la liste du groupe
+        bloc.appendChild(div);
+
+        // Optionnel: fermer le modal, réinitialiser le formulaire !
+        document.getElementById("swimmerModal").style.display = "none";
+        // Réinitialiser champs:
+        document.getElementById("swimmerName").value = "";
+        document.getElementById("crawlScore").value = "";
+        document.getElementById("dosScore").value = "";
+        document.getElementById("brasseScore").value = "";
+        document.getElementById("papillonScore").value = "";
+        // ... idem pour autres champs
+
+        // Optionnel: reset toutes les sections techniques
+        // Optionnel: sélectionne le nouveau nageur (ajouter la classe active etc)
+    }
+    // else: affiche un message d'erreur si le nom ou le groupe est vide
+});
 </script>
