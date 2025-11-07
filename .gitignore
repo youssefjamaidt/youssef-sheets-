@@ -1,0 +1,19 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers d'environnement
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dossiers de build
+/dist
+/build
+
+# Fichiers temporaires
+*.tmp
+*.temp
