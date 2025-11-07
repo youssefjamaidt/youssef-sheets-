@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système de Fiches Techniques - Natation Compétition</title>
+    <title>Système de Fiches Techniques Natation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary: #1a73e8;
@@ -15,294 +16,364 @@
             --gray: #5f6368;
             --border: #dadce0;
         }
-        * {margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
-        body {background:#f5f7fa;color:var(--dark);}
-        .container {max-width:1400px;margin:0 auto;padding:20px;}
-        header {background:linear-gradient(135deg,var(--primary),#0d47a1);color:white;padding:25px 0;border-radius:10px;margin-bottom:30px;box-shadow:0 4px 12px rgba(0, 0, 0, 0.1);text-align:center;}
-        h1 {font-size:2.5rem;margin-bottom:10px;}
-        .subtitle {font-size:1.2rem;opacity:0.9;}
-        .dashboard {display:grid;grid-template-columns:300px 1fr;gap:20px;margin-bottom:30px;}
-        .sidebar {background:white;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.05);padding:20px;height:fit-content;}
-        .main-content {background:white;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.05);padding:20px;}
-        .card {background:white;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.05);margin-bottom:25px;overflow:hidden;transition:transform 0.3s,box-shadow 0.3s;}
-        .card:hover {transform:translateY(-5px);box-shadow:0 8px 16px rgba(0,0,0,0.1);}
-        .card-header {background:var(--primary);color:white;padding:15px 20px;font-size:1.3rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;}
+        * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        body {background:#f5f7fa; color:var(--dark);}
+        .container {max-width:1400px; margin:0 auto; padding:20px;}
+        header {background:linear-gradient(135deg, var(--primary), #0d47a1); color:white; padding:25px 0; border-radius:10px; margin-bottom:30px; box-shadow:0 4px 12px rgba(0,0,0,0.1); text-align:center;}
+        h1 {font-size:2.5rem; margin-bottom:10px;}
+        .subtitle {font-size:1.2rem; opacity:0.9;}
+        .dashboard {display:grid; grid-template-columns:300px 1fr; gap:20px; margin-bottom:30px;}
+        .sidebar {background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.05); padding:20px; height:fit-content;}
+        .main-content {background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.05); padding:20px;}
+        .card {background:white; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.05); margin-bottom:25px; overflow:hidden; transition:transform 0.3s, box-shadow 0.3s;}
+        .card:hover {transform:translateY(-5px); box-shadow:0 8px 16px rgba(0,0,0,0.1);}
+        .card-header {background:var(--primary); color:white; padding:15px 20px; font-size:1.3rem; font-weight:600; display:flex; justify-content:space-between; align-items:center;}
         .card-body {padding:20px;}
-        .swimmer-list {max-height:500px;overflow-y:auto;}
-        .swimmer-item {padding:12px 15px;border-bottom:1px solid var(--border);cursor:pointer;transition:background-color 0.2s;display:flex;justify-content:space-between;align-items:center;}
+        .swimmer-list {max-height:500px; overflow-y:auto;}
+        .swimmer-item {padding:12px 15px; border-bottom:1px solid var(--border); cursor:pointer; transition:background-color 0.2s; display:flex; justify-content:space-between; align-items:center; position:relative;}
         .swimmer-item:hover {background:rgba(26,115,232,0.05);}
-        .swimmer-item.active {background:rgba(26,115,232,0.1);border-left:4px solid var(--primary);}
+        .swimmer-item.active {background:rgba(26,115,232,0.1); border-left:4px solid var(--primary);}
         .swimmer-group {margin-bottom:20px;}
-        .group-title {font-weight:600;color:var(--gray);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border);}
-        .score-display {display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:50%;font-weight:bold;font-size:1.2rem;color:white;}
+        .group-title {font-weight:600; color:var(--gray); margin-bottom:10px; padding-bottom:5px; border-bottom:1px solid var(--border);}
+        .score-display {display:inline-flex; align-items:center; justify-content:center; width:50px; height:50px; border-radius:50%; font-weight:bold; font-size:1.2rem; color:white;}
         .score-high {background:var(--secondary);}
         .score-medium {background:var(--accent);}
         .score-low {background:var(--danger);}
         .form-group {margin-bottom:15px;}
-        .form-label {display:block;margin-bottom:5px;font-weight:600;color:var(--gray);}
-        .form-control {width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:1rem;}
-        textarea.form-control {min-height:100px;resize:vertical;}
-        .btn {padding:10px 20px;border:none;border-radius:6px;font-weight:600;cursor:pointer;transition:all 0.3s;}
-        .btn-primary {background:var(--primary);color:white;}
-        .btn-secondary {background:var(--light);color:var(--dark);border:1px solid var(--border);}
-        .btn-success {background:var(--secondary);color:white;}
-        .btn-danger {background:var(--danger);color:white;}
-        .btn-small {padding:6px 12px;font-size:0.9rem;}
-        .btn:hover {opacity:0.9;transform:translateY(-2px);}
-        .tech-library {background:rgba(26,115,232,0.05);border-radius:8px;padding:15px;margin-bottom:20px;}
+        .form-label {display:block; margin-bottom:5px; font-weight:600; color:var(--gray);}
+        .form-control {width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-size:1rem;}
+        textarea.form-control {min-height:80px; resize:vertical;}
+        .btn {padding:10px 20px; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.3s;}
+        .btn-primary {background:var(--primary); color:white;}
+        .btn-secondary {background:var(--light); color:var(--dark); border:1px solid var(--border);}
+        .btn-success {background:var(--secondary); color:white;}
+        .btn-danger {background:var(--danger); color:white;}
+        .btn-small {padding:6px 12px; font-size:0.9rem;}
+        .btn:hover {opacity:0.9; transform:translateY(-2px);}
+        .icon-btn {background:none; border:none; cursor:pointer; font-size:1.1rem; margin-left:5px; color:var(--gray);}
+        .tech-library {background:rgba(26,115,232,0.05); border-radius:8px; padding:15px; margin-bottom:20px;}
         .tech-category {margin-bottom:15px;}
-        .tech-category-title {font-weight:600;margin-bottom:10px;color:var(--primary);}
-        .tech-buttons {display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
-        .tech-item {background:white;border:1px solid var(--border);border-radius:20px;padding:8px 15px;font-size:0.9rem;cursor:pointer;transition:all 0.2s;}
-        .tech-item:hover,.tech-item.active{background:var(--primary);color:white;}
-        .notes-section {background:rgba(26,115,232,0.05);padding:15px;border-radius:8px;margin-top:20px;}
-        .add-tech-btn {margin-left:10px;font-size:1rem;padding:4px 10px;vertical-align:middle;}
-        .tabs {display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
-        .tab {padding:10px 20px;cursor:pointer;border-bottom:3px solid transparent;}
-        .tab.active {border-bottom:3px solid var(--primary);font-weight:600;}
+        .tech-category-title {font-weight:600; margin-bottom:10px; color:var(--primary);}
+        .tech-buttons {display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+        .tech-item {background:white; border:1px solid var(--border); border-radius:20px; padding:8px 15px; font-size:0.9rem; cursor:pointer; transition:all 0.2s;}
+        .tech-item:hover, .tech-item.active {background:var(--primary); color:white;}
+        .notes-section {background:rgba(26,115,232,0.05); padding:15px; border-radius:8px; margin-top:20px;}
+        .add-tech-btn {margin-left:10px; font-size:1rem; padding:4px 10px; vertical-align:middle;}
+        .tabs {display:flex; border-bottom:1px solid var(--border); margin-bottom:20px;}
+        .tab {padding:10px 20px; cursor:pointer; border-bottom:3px solid transparent;}
+        .tab.active {border-bottom:3px solid var(--primary); font-weight:600;}
         .tab-content {display:none;}
         .tab-content.active {display:block;}
-        .modal {display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;}
-        .modal-content {background:white;border-radius:10px;width:95%;max-width:900px;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-        .modal-header {display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid var(--border);}
-        .modal-title {font-size:1.5rem;font-weight:600;}
-        .close {font-size:1.5rem;cursor:pointer;color:var(--gray);}
-        footer {text-align:center;margin-top:40px;padding:20px;color:var(--gray);font-size:0.9rem;}
-        @media (max-width:768px){.dashboard{grid-template-columns:1fr;}h1{font-size:2rem;}.card-header{flex-direction:column;gap:10px;}.tabs{flex-direction:column;}.tab{padding:8px 15px;}}
+        .modal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;}
+        .modal-content {background:white; border-radius:10px; width:95%; max-width:900px; max-height:90vh; overflow-y:auto; padding:20px; box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+        .modal-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:1px solid var(--border);}
+        .modal-title {font-size:1.5rem; font-weight:600;}
+        .close {font-size:1.5rem; cursor:pointer; color:var(--gray);}
+        .actions-inline {display:flex; gap:8px;}
+        footer {text-align:center; margin-top:40px; padding:20px; color:var(--gray); font-size:0.9rem;}
+        @media (max-width:768px){.dashboard{grid-template-columns:1fr;} h1{font-size:2rem;} .card-header{flex-direction:column;gap:10px;} .tabs{flex-direction:column;} .tab{padding:8px 15px;}}
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Système de Fiches Techniques</h1>
-            <p class="subtitle">Gestion individualisée pour tous les nageurs du club</p>
-        </header>
-        <div class="dashboard">
-            <div class="sidebar">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Liste des Nageurs</span>
-                        <button class="btn btn-success" id="addSwimmerBtn">+ Ajouter</button>
-                    </div>
-                    <div class="card-body">
-                        <div class="swimmer-list">
-                            <div class="swimmer-group" id="competition-group">
-                                <div class="group-title">Compétition (<span class="comp-count">0</span>)</div>
-                            </div>
-                            <div class="swimmer-group" id="pre-competition-group">
-                                <div class="group-title">Pré-compétition (<span class="precomp-count">0</span>)</div>
-                            </div>
-                            <div class="swimmer-group" id="apprentissage-group">
-                                <div class="group-title">Apprentissage (<span class="appr-count">0</span>)</div>
-                            </div>
-                        </div>
-                    </div>
+<div class="container">
+    <header>
+        <h1>Système de Fiches Techniques</h1>
+        <p class="subtitle">Gestion individualisée pour tous les nageurs du club</p>
+    </header>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <span>Liste des Nageurs</span>
+                    <button class="btn btn-success" id="addSwimmerBtn">+ Ajouter</button>
                 </div>
-                <div class="card">
-                    <div class="card-header"><span>Filtres & Recherche</span></div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Rechercher un nageur..." id="searchSwimmer">
+                <div class="card-body">
+                    <div class="swimmer-list">
+                        <div class="swimmer-group" id="competition-group">
+                            <div class="group-title">Compétition (<span class="comp-count">0</span>)</div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Groupe</label>
-                            <select class="form-control" id="filterGroup">
-                                <option>Tous les groupes</option>
-                                <option>Compétition</option>
-                                <option>Pré-compétition</option>
-                                <option>Apprentissage</option>
-                            </select>
+                        <div class="swimmer-group" id="pre-competition-group">
+                            <div class="group-title">Pré-compétition (<span class="precomp-count">0</span>)</div>
+                        </div>
+                        <div class="swimmer-group" id="apprentissage-group">
+                            <div class="group-title">Apprentissage (<span class="appr-count">0</span>)</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="main-content">
-                <div id="swimmerDetail">
-                    <div class="notes-section" id="welcomeNote">
-                        <h3>Bienvenue !</h3>
-                        <p>Sélectionnez un nageur à gauche pour voir sa fiche technique individualisée.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <footer>
-            <p>Système de Fiches Techniques Individualisées - © 2023 Club de Natation Compétition</p>
-        </footer>
-    </div>
-    <!-- Modal pour ajouter/modifier un nageur -->
-    <div class="modal" id="swimmerModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Ajouter un nageur</h2>
-                <span class="close" id="closeModal">&times;</span>
-            </div>
-            <div class="tab-container">
-                <div class="tabs">
-                    <div class="tab active" data-tab="info">Informations générales</div>
-                    <div class="tab" data-tab="crawl">Crawl</div>
-                    <div class="tab" data-tab="dos">Dos</div>
-                    <div class="tab" data-tab="brasse">Brasse</div>
-                    <div class="tab" data-tab="papillon">Papillon</div>
-                </div>
-                <!-- Info tab -->
-                <div class="tab-content active" id="info-tab">
+            <div class="card">
+                <div class="card-header"><span>Filtres & Recherche</span></div>
+                <div class="card-body">
                     <div class="form-group">
-                        <label class="form-label">Nom complet</label>
-                        <input type="text" class="form-control" id="swimmerName">
+                        <input type="text" class="form-control" placeholder="Rechercher un nageur..." id="searchSwimmer">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Groupe</label>
-                        <select class="form-control" id="swimmerGroup">
-                            <option value="competition">Compétition</option>
-                            <option value="pre-competition">Pré-compétition</option>
-                            <option value="apprentissage">Apprentissage</option>
+                        <select class="form-control" id="filterGroup">
+                            <option>Tous les groupes</option>
+                            <option>Compétition</option>
+                            <option>Pré-compétition</option>
+                            <option>Apprentissage</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Date d'analyse</label>
-                        <input type="date" class="form-control" id="analysisDate">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Entraîneur responsable</label>
-                        <input type="text" class="form-control" id="coachName">
-                    </div>
                 </div>
-                <!-- Crawl tab -->
-                <div class="tab-content" id="crawl-tab">
-                    <div class="form-group">
-                        <label class="form-label">Score Crawl (0-10)</label>
-                        <input type="number" class="form-control" id="crawlScore" min="0" max="10" step="0.5">
-                    </div>
-                    <div class="tech-library">
-                        <h3>Bibliothèque Technique - CRAWL</h3>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Points Forts
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="crawl-strengths-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="crawl-strengths-buttons"></div>
-                        </div>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Axes d'Amélioration
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="crawl-improvements-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="crawl-improvements-buttons"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Forces (éditables)</label>
-                        <textarea class="form-control" id="crawlStrengths"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Axes d'amélioration (éditables)</label>
-                        <textarea class="form-control" id="crawlImprovements"></textarea>
-                    </div>
-                </div>
-                <!-- Dos tab -->
-                <div class="tab-content" id="dos-tab">
-                    <div class="form-group">
-                        <label class="form-label">Score Dos (0-10)</label>
-                        <input type="number" class="form-control" id="dosScore" min="0" max="10" step="0.5">
-                    </div>
-                    <div class="tech-library">
-                        <h3>Bibliothèque Technique - DOS</h3>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Points Forts
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="dos-strengths-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="dos-strengths-buttons"></div>
-                        </div>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Axes d'Amélioration
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="dos-improvements-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="dos-improvements-buttons"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Forces (éditables)</label>
-                        <textarea class="form-control" id="dosStrengths"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Axes d'amélioration (éditables)</label>
-                        <textarea class="form-control" id="dosImprovements"></textarea>
-                    </div>
-                </div>
-                <!-- Brasse tab -->
-                <div class="tab-content" id="brasse-tab">
-                    <div class="form-group">
-                        <label class="form-label">Score Brasse (0-10)</label>
-                        <input type="number" class="form-control" id="brasseScore" min="0" max="10" step="0.5">
-                    </div>
-                    <div class="tech-library">
-                        <h3>Bibliothèque Technique - BRASSE</h3>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Points Forts
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="brasse-strengths-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="brasse-strengths-buttons"></div>
-                        </div>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Axes d'Amélioration
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="brasse-improvements-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="brasse-improvements-buttons"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Forces (éditables)</label>
-                        <textarea class="form-control" id="brasseStrengths"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Axes d'amélioration (éditables)</label>
-                        <textarea class="form-control" id="brasseImprovements"></textarea>
-                    </div>
-                </div>
-                <!-- Papillon tab -->
-                <div class="tab-content" id="papillon-tab">
-                    <div class="form-group">
-                        <label class="form-label">Score Papillon (0-10)</label>
-                        <input type="number" class="form-control" id="papillonScore" min="0" max="10" step="0.5">
-                    </div>
-                    <div class="tech-library">
-                        <h3>Bibliothèque Technique - PAPILLON</h3>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Points Forts
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="papillon-strengths-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="papillon-strengths-buttons"></div>
-                        </div>
-                        <div class="tech-category">
-                            <div class="tech-category-title">
-                                Axes d'Amélioration
-                                <button class="add-tech-btn btn btn-small btn-success" data-category="papillon-improvements-buttons">+</button>
-                            </div>
-                            <div class="tech-buttons" id="papillon-improvements-buttons"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Forces (éditables)</label>
-                        <textarea class="form-control" id="papillonStrengths"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Axes d'amélioration (éditables)</label>
-                        <textarea class="form-control" id="papillonImprovements"></textarea>
-                    </div>
-                </div>
-                <div style="text-align:right;">
-                    <button class="btn btn-success" id="saveSwimmerBtn">Enregistrer</button>
+            </div>
+        </div>
+        <div class="main-content">
+            <div id="swimmerDetail">
+                <div class="notes-section" id="welcomeNote">
+                    <h3>Bienvenue !</h3>
+                    <p>Sélectionnez un nageur à gauche pour voir sa fiche technique individualisée.</p>
                 </div>
             </div>
         </div>
     </div>
+    <footer>
+        <p>Système de Fiches Techniques Individualisées - © 2025 Club de Natation Compétition</p>
+    </footer>
+</div>
+<!-- Modal Ajout/Edition -->
+<div class="modal" id="swimmerModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Ajouter un nageur</h2>
+            <span class="close" id="closeModal">&times;</span>
+        </div>
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="info">Informations générales</div>
+                <div class="tab" data-tab="crawl">Crawl</div>
+                <div class="tab" data-tab="dos">Dos</div>
+                <div class="tab" data-tab="brasse">Brasse</div>
+                <div class="tab" data-tab="papillon">Papillon</div>
+            </div>
+            <div class="tab-content active" id="info-tab">
+                <div class="form-group">
+                    <label class="form-label">Nom complet</label>
+                    <input type="text" class="form-control" id="swimmerName">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Groupe</label>
+                    <select class="form-control" id="swimmerGroup">
+                        <option value="competition">Compétition</option>
+                        <option value="pre-competition">Pré-compétition</option>
+                        <option value="apprentissage">Apprentissage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date d'analyse</label>
+                    <input type="date" class="form-control" id="analysisDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Entraîneur responsable</label>
+                    <input type="text" class="form-control" id="coachName">
+                </div>
+            </div>
+            <div class="tab-content" id="crawl-tab">
+                <div class="form-group">
+                    <label class="form-label">Score Crawl (0-10)</label>
+                    <input type="number" class="form-control" id="crawlScore" min="0" max="10" step="0.5">
+                </div>
+                <div class="tech-library">
+                    <h3>Bibliothèque Technique - CRAWL</h3>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Points Forts
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="crawl-strengths-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="crawl-strengths-buttons"></div>
+                    </div>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Axes d'Amélioration
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="crawl-improvements-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="crawl-improvements-buttons"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Forces (éditables)</label>
+                    <textarea class="form-control" id="crawlStrengths"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Axes d'amélioration (éditables)</label>
+                    <textarea class="form-control" id="crawlImprovements"></textarea>
+                </div>
+            </div>
+            <div class="tab-content" id="dos-tab">
+                <div class="form-group">
+                    <label class="form-label">Score Dos (0-10)</label>
+                    <input type="number" class="form-control" id="dosScore" min="0" max="10" step="0.5">
+                </div>
+                <div class="tech-library">
+                    <h3>Bibliothèque Technique - DOS</h3>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Points Forts
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="dos-strengths-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="dos-strengths-buttons"></div>
+                    </div>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Axes d'Amélioration
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="dos-improvements-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="dos-improvements-buttons"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Forces (éditables)</label>
+                    <textarea class="form-control" id="dosStrengths"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Axes d'amélioration (éditables)</label>
+                    <textarea class="form-control" id="dosImprovements"></textarea>
+                </div>
+            </div>
+            <div class="tab-content" id="brasse-tab">
+                <div class="form-group">
+                    <label class="form-label">Score Brasse (0-10)</label>
+                    <input type="number" class="form-control" id="brasseScore" min="0" max="10" step="0.5">
+                </div>
+                <div class="tech-library">
+                    <h3>Bibliothèque Technique - BRASSE</h3>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Points Forts
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="brasse-strengths-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="brasse-strengths-buttons"></div>
+                    </div>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Axes d'Amélioration
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="brasse-improvements-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="brasse-improvements-buttons"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Forces (éditables)</label>
+                    <textarea class="form-control" id="brasseStrengths"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Axes d'amélioration (éditables)</label>
+                    <textarea class="form-control" id="brasseImprovements"></textarea>
+                </div>
+            </div>
+            <div class="tab-content" id="papillon-tab">
+                <div class="form-group">
+                    <label class="form-label">Score Papillon (0-10)</label>
+                    <input type="number" class="form-control" id="papillonScore" min="0" max="10" step="0.5">
+                </div>
+                <div class="tech-library">
+                    <h3>Bibliothèque Technique - PAPILLON</h3>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Points Forts
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="papillon-strengths-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="papillon-strengths-buttons"></div>
+                    </div>
+                    <div class="tech-category">
+                        <div class="tech-category-title">
+                            Axes d'Amélioration
+                            <button class="add-tech-btn btn btn-small btn-success" data-category="papillon-improvements-buttons">+</button>
+                        </div>
+                        <div class="tech-buttons" id="papillon-improvements-buttons"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Forces (éditables)</label>
+                    <textarea class="form-control" id="papillonStrengths"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Axes d'amélioration (éditables)</label>
+                    <textarea class="form-control" id="papillonImprovements"></textarea>
+                </div>
+            </div>
+            <div style="text-align:right; margin-top:8px;">
+                <button class="btn btn-success" id="saveSwimmerBtn">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
-// Onglet modal nageur
+// ----- Bibliothèque technique prédéfinie -----
+const TECH_LIB = {
+    crawl: {
+        strengths: [
+            "Bon alignement corporel",
+            "Respiration latérale bien intégrée",
+            "Amplitude du mouvement de bras",
+            "Battements réguliers"
+        ],
+        improvements: [
+            "Prise d'appuis à travailler",
+            "Synchronisation bras/jambes",
+            "Coordination respiration",
+            "Améliorer la propulsion"
+        ]
+    },
+    dos: {
+        strengths: [
+            "Battement efficace",
+            "Stabilité du bassin",
+            "Entrée de main correcte"
+        ],
+        improvements: [
+            "Améliorer la prise d'appui",
+            "Synchronisation épaule/bassin",
+            "Alignement du corps"
+        ]
+    },
+    brasse: {
+        strengths: [
+            "Puissance de poussée",
+            "Temps de glissement",
+            "Coordination bras/jambes"
+        ],
+        improvements: [
+            "Position du corps",
+            "Respiration trop haute",
+            "Amplitude du mouvement"
+        ]
+    },
+    papillon: {
+        strengths: [
+            "Mobilité des épaules",
+            "Rythme régulier",
+            "Motivation dans l'effort"
+        ],
+        improvements: [
+            "Ondulation à partir du tronc",
+            "Synchronisation bras/jambes",
+            "Maintenir la vélocité"
+        ]
+    }
+};
+// Init bibliothèque technique dans chaque section (en modal)
+["crawl","dos","brasse","papillon"].forEach(nage => {
+    ["strengths","improvements"].forEach(cat => {
+        const container = document.getElementById(`${nage}-${cat}-buttons`);
+        TECH_LIB[nage][cat].forEach(item => {
+            const btn = document.createElement('div');
+            btn.className = 'tech-item';
+            btn.textContent = item;
+            btn.onclick = function() {
+                const textareaId = nage + (cat === "strengths" ? "Strengths" : "Improvements");
+                const textarea = document.getElementById(textareaId);
+                let val = textarea.value.trim();
+                if(val && !val.endsWith("\n")) val += "\n";
+                textarea.value = val + item + "\n";
+            };
+            container.appendChild(btn);
+        });
+    });
+});
+
+// ----- Onglet Modal -----
 document.querySelectorAll(".tab").forEach(tab=>{
     tab.onclick = function() {
         document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
@@ -311,38 +382,56 @@ document.querySelectorAll(".tab").forEach(tab=>{
         document.getElementById(tab.dataset.tab+"-tab").classList.add("active");
     };
 });
-// Ouvre/ferme la modale
-document.getElementById("addSwimmerBtn").onclick=function(){
-    document.getElementById("swimmerModal").style.display="flex";
-    document.body.style.overflow='hidden';
-};
+// Ouvre/ferme modal
+function openModal(editObj=null) {
+    document.getElementById("swimmerModal").style.display = "flex";
+    document.body.style.overflow = "hidden";
+    document.getElementById("modalTitle").innerText = editObj ? "Modifier un nageur" : "Ajouter un nageur";
+    document.getElementById("saveSwimmerBtn").setAttribute("data-edit-id", editObj ? editObj.id : "");
+    // Si édition, prérempli
+    ["swimmerName","swimmerGroup","analysisDate","coachName",
+     "crawlScore","dosScore","brasseScore","papillonScore",
+     "crawlStrengths","crawlImprovements","dosStrengths","dosImprovements",
+     "brasseStrengths","brasseImprovements","papillonStrengths","papillonImprovements"
+    ].forEach(id => {
+        document.getElementById(id).value = editObj ? (editObj[id]||"") : "";
+    });
+}
+document.getElementById("addSwimmerBtn").onclick=function(){openModal();}
 document.getElementById("closeModal").onclick=function(){
-    document.getElementById("swimmerModal").style.display="none";
-    document.body.style.overflow='';
+    document.getElementById("swimmerModal").style.display = "none";
+    document.body.style.overflow = "";
 };
-// Boutons "+" pour ajouter dynamique dans bibliothèque technique
+
+// ----- Ajout des "+" dynamiques -----
 document.querySelectorAll('.add-tech-btn').forEach(btn=>{
     btn.addEventListener('click',function(){
         const containerId=btn.getAttribute('data-category');
         const container=document.getElementById(containerId);
         const input=document.createElement('input');
-        input.type='text';
-        input.className='form-control';
-        input.placeholder="Nouveau point fort / axe";
-        input.style.marginTop='6px';
-        input.style.display='inline-block';input.style.width='60%';
+        input.type='text'; input.className='form-control'; input.placeholder="Nouveau point fort / axe"; input.style.marginTop='6px'; input.style.display='inline-block';input.style.width='60%';
         const validate=document.createElement('button');
         validate.textContent='Valider';
         validate.className='btn btn-success btn-small';validate.style.marginLeft='8px';
         const wrapper=document.createElement('div');
         wrapper.style.marginBottom='5px';wrapper.appendChild(input);wrapper.appendChild(validate);
-        container.appendChild(wrapper);
-        input.focus();
+        container.appendChild(wrapper); input.focus();
         validate.onclick=function(){
             if(input.value.trim()){
                 const newItem=document.createElement('div');
-                newItem.className='tech-item';
-                newItem.textContent=input.value;
+                newItem.className='tech-item';newItem.textContent=input.value;
+                newItem.onclick=function(){
+                    // Ajoute à la textarea correspondante
+                    const nageCat = containerId.match(/(.+)-(.+)-buttons/);
+                    if(nageCat){
+                        const [_, nage, cat] = nageCat;
+                        const textareaId = nage + (cat === "strengths" ? "Strengths" : "Improvements");
+                        const textarea = document.getElementById(textareaId);
+                        let val = textarea.value.trim();
+                        if(val && !val.endsWith("\n")) val += "\n";
+                        textarea.value = val + input.value + "\n";
+                    }
+                };
                 container.appendChild(newItem);
             }
             wrapper.remove();
@@ -356,112 +445,186 @@ document.querySelectorAll('.add-tech-btn').forEach(btn=>{
         });
     });
 });
-// Ajout dynamique du nageur
-document.getElementById("saveSwimmerBtn").onclick=function(e){
+
+// ---- GESTION DES NAGEURS JS ----
+let nageurs = [], nageurId = 1;
+
+// Ajout ou Edition
+document.getElementById("saveSwimmerBtn").onclick = function(e){
     e.preventDefault();
+    // Infos du formulaire
+    let id = this.getAttribute("data-edit-id");
     let name=document.getElementById("swimmerName").value.trim();
     let group=document.getElementById("swimmerGroup").value;
-    let crawlScore=parseFloat(document.getElementById("crawlScore").value)||0;
-    let dosScore=parseFloat(document.getElementById("dosScore").value)||0;
-    let brasseScore=parseFloat(document.getElementById("brasseScore").value)||0;
-    let papillonScore=parseFloat(document.getElementById("papillonScore").value)||0;
-    let scores=[crawlScore,dosScore,brasseScore,papillonScore];
-    let validScores=scores.filter(s=>!isNaN(s)&&s>0);
-    let avgScore=validScores.length?(validScores.reduce((a,b)=>a+b,0)/validScores.length).toFixed(1):"";
-    let scoreClass="score-medium";
-    if(avgScore>=7)scoreClass="score-high";
-    else if(avgScore<5)scoreClass="score-low";
-    let groupLabel="Compétition", groupDiv="competition-group",counterClass=".comp-count";
-    if(group==="pre-competition"){groupLabel="Pré-compétition";groupDiv="pre-competition-group";counterClass=".precomp-count";}
-    if(group==="apprentissage"){groupLabel="Apprentissage";groupDiv="apprentissage-group";counterClass=".appr-count";}
-    if(name){
+    let analysisDate=document.getElementById("analysisDate").value;
+    let coachName=document.getElementById("coachName").value;
+    let crawlScore=parseFloat(document.getElementById("crawlScore").value)||"";
+    let dosScore=parseFloat(document.getElementById("dosScore").value)||"";
+    let brasseScore=parseFloat(document.getElementById("brasseScore").value)||"";
+    let papillonScore=parseFloat(document.getElementById("papillonScore").value)||"";
+    function valTextarea(id){return document.getElementById(id).value.trim();}
+    // Score moyen
+    let scores=[crawlScore,dosScore,brasseScore,papillonScore].filter(s=>s!=="");
+    let avgScore=(scores.length>0)?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):"";
+    if(!name) return alert("Nom du nageur obligatoire !");
+    // Ajout ou Mise à jour
+    let nageur = {id: id || 'n' + nageurId++, swimmerName:name, swimmerGroup:group, analysisDate, coachName,
+        crawlScore,dosScore,brasseScore,papillonScore,
+        crawlStrengths:valTextarea("crawlStrengths"), crawlImprovements:valTextarea("crawlImprovements"),
+        dosStrengths:valTextarea("dosStrengths"), dosImprovements:valTextarea("dosImprovements"),
+        brasseStrengths:valTextarea("brasseStrengths"), brasseImprovements:valTextarea("brasseImprovements"),
+        papillonStrengths:valTextarea("papillonStrengths"), papillonImprovements:valTextarea("papillonImprovements"),
+        avgScore
+    };
+    if(id){ // MAJ
+        nageurs = nageurs.map(n=>n.id===id?nageur:n);
+    }else{
+        nageurs.push(nageur);
+    }
+    document.getElementById("swimmerModal").style.display = "none";
+    document.body.style.overflow = "";
+    renderListeNageurs();
+    selectNageur(nageur.id);
+    // Reset form
+    document.querySelectorAll("#swimmerModal .form-control").forEach(i=>i.value="");
+    this.setAttribute("data-edit-id", "");
+};
+// Liste à gauche
+function renderListeNageurs(){
+    // Clear
+    document.querySelectorAll('.swimmer-group').forEach(grp=>{
+        grp.querySelectorAll('.swimmer-item').forEach(it=>it.remove());
+    });
+    let groupMap = {
+        "competition":"competition-group",
+        "pre-competition":"pre-competition-group",
+        "apprentissage":"apprentissage-group"
+    };
+    let countMap = {competition:0, "pre-competition":0, apprentissage:0};
+    nageurs.forEach(n=>{
+        let bloc = document.getElementById(groupMap[n.swimmerGroup]);
+        let scoreClass="score-medium";
+        if(n.avgScore!==""){
+            if(n.avgScore>=7)scoreClass="score-high";
+            else if(n.avgScore<5)scoreClass="score-low";
+        }
         let div=document.createElement("div");
         div.className="swimmer-item";
-        div.innerHTML=`<span>${name}</span><span class="score-display ${scoreClass}">${avgScore}</span>`;
-        document.getElementById(groupDiv).appendChild(div);
-        // Mise à jour du compteur
-        let count = document.getElementById(groupDiv).querySelectorAll(".swimmer-item").length;
-        document.getElementById(groupDiv).querySelector(counterClass).innerText = count;
-        document.getElementById("swimmerModal").style.display="none";
-        document.body.style.overflow='';
-        document.getElementById("swimmerName").value='';
-        document.getElementById("crawlScore").value='';
-        document.getElementById("dosScore").value='';
-        document.getElementById("brasseScore").value='';
-        document.getElementById("papillonScore").value='';
-        document.getElementById("analysisDate").value='';
-        document.getElementById("coachName").value='';
-        // Sélection du nageur et vue fiche détaillée
-        document.querySelectorAll('.swimmer-item').forEach(it=>it.classList.remove('active'));
-        div.classList.add('active');
-        afficherFicheNageur({
-            name:name,
-            group:groupLabel,
-            analysisDate:document.getElementById("analysisDate").value,
-            coach:document.getElementById("coachName").value,
-            avgScore:avgScore,
-            scores:{
-                crawl:crawlScore,
-                dos:dosScore,
-                brasse:brasseScore,
-                papillon:papillonScore
-            },
-            forces:{
-                crawl:document.getElementById("crawlStrengths").value,
-                dos:document.getElementById("dosStrengths").value,
-                brasse:document.getElementById("brasseStrengths").value,
-                papillon:document.getElementById("papillonStrengths").value
-            },
-            axes:{
-                crawl:document.getElementById("crawlImprovements").value,
-                dos:document.getElementById("dosImprovements").value,
-                brasse:document.getElementById("brasseImprovements").value,
-                papillon:document.getElementById("papillonImprovements").value
-            }
-        });
-        div.onclick=function(){
-            document.querySelectorAll('.swimmer-item').forEach(it=>it.classList.remove('active'));
-            div.classList.add('active');
-            afficherFicheNageur({name,group:groupLabel, avgScore, scores:{crawl:crawlScore,dos:dosScore,brasse:brasseScore,papillon:papillonScore},forces:{
-                crawl:document.getElementById("crawlStrengths").value,
-                dos:document.getElementById("dosStrengths").value,
-                brasse:document.getElementById("brasseStrengths").value,
-                papillon:document.getElementById("papillonStrengths").value
-            },axes:{
-                crawl:document.getElementById("crawlImprovements").value,
-                dos:document.getElementById("dosImprovements").value,
-                brasse:document.getElementById("brasseImprovements").value,
-                papillon:document.getElementById("papillonImprovements").value
-            }});
-        };
-    }
+        div.setAttribute("data-id", n.id);
+        div.innerHTML = `<span>${n.swimmerName}</span>
+            <span class="score-display ${scoreClass}">${n.avgScore||""}</span>
+            <span class="actions-inline" style="margin-left:10px;">
+                <button class="icon-btn" title="Editer" onclick="event.stopPropagation();editNageur('${n.id}')">&#9998;</button>
+                <button class="icon-btn" title="Supprimer" onclick="event.stopPropagation();removeNageur('${n.id}')">&#128465;</button>
+            </span>`;
+        div.onclick=function(){selectNageur(n.id);}
+        bloc.appendChild(div);
+        countMap[n.swimmerGroup]++;
+    });
+    document.querySelector(".comp-count").innerText = countMap["competition"];
+    document.querySelector(".precomp-count").innerText = countMap["pre-competition"];
+    document.querySelector(".appr-count").innerText = countMap["apprentissage"];
+}
+// Edition
+window.editNageur = function(id){
+    let nageur = nageurs.find(n=>n.id===id);
+    openModal(nageur);
 };
-// Affichage fiche technique à droite
+// Suppression
+window.removeNageur = function(id){
+    if(!confirm("Supprimer ce nageur ?")) return;
+    nageurs = nageurs.filter(n=>n.id!==id);
+    renderListeNageurs();
+    document.getElementById("swimmerDetail").innerHTML = `<div class="notes-section" id="welcomeNote">
+        <h3>Bienvenue !</h3>
+        <p>Sélectionnez un nageur à gauche pour voir sa fiche technique individualisée.</p>
+    </div>`;
+};
+// Sélection nageur
+function selectNageur(id){
+    document.querySelectorAll('.swimmer-item').forEach(it=>it.classList.remove('active'));
+    let el = document.querySelector(`.swimmer-item[data-id="${id}"]`);
+    if(el) el.classList.add('active');
+    let nageur = nageurs.find(n=>n.id===id);
+    afficherFicheNageur(nageur);
+}
+
+// ----- FICHE TECHNIQUE -------
+function escapeHTML(str){
+    if(!str) return "";
+    return str.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+}
 function afficherFicheNageur(data){
     document.getElementById("swimmerDetail").innerHTML = `
     <div class="card">
-        <div class="card-header"><span>Fiche Technique - ${data.name}</span></div>
+        <div class="card-header">
+            <span>Fiche Technique - ${escapeHTML(data.swimmerName)}</span>
+            <span>
+                <button class="btn btn-secondary btn-small" onclick="editNageur('${data.id}')">Modifier</button>
+                <button class="btn btn-danger btn-small" onclick="removeNageur('${data.id}')">Supprimer</button>
+                <button class="btn btn-primary btn-small" onclick="exportPDF('${data.id}')">Export PDF</button>
+            </span>
+        </div>
         <div class="card-body">
             <div class="swimmer-info">
-                <div class="info-group"><span class="info-label">Nom</span><span class="info-value">${data.name}</span></div>
-                <div class="info-group"><span class="info-label">Groupe</span><span class="info-value">${data.group}</span></div>
-                <div class="info-group"><span class="info-label">Entraîneur</span><span class="info-value">${data.coach||""}</span></div>
-                <div class="info-group"><span class="info-label">Date d'analyse</span><span class="info-value">${data.analysisDate||""}</span></div>
-                <div class="info-group"><span class="info-label">Score moyen</span><span class="info-value"><div class="score-display">${data.avgScore}/10</div></span></div>
+                <div class="info-group"><span class="info-label">Nom</span><span class="info-value">${escapeHTML(data.swimmerName)}</span></div>
+                <div class="info-group"><span class="info-label">Groupe</span><span class="info-value">${escapeHTML({"competition":"Compétition","pre-competition":"Pré-compétition","apprentissage":"Apprentissage"}[data.swimmerGroup])}</span></div>
+                <div class="info-group"><span class="info-label">Entraîneur</span><span class="info-value">${escapeHTML(data.coachName)}</span></div>
+                <div class="info-group"><span class="info-label">Date d'analyse</span><span class="info-value">${escapeHTML(data.analysisDate)}</span></div>
+                <div class="info-group"><span class="info-label">Score moyen</span><span class="info-value"><div class="score-display">${escapeHTML(data.avgScore)}/10</div></span></div>
             </div>
             ${["crawl","dos","brasse","papillon"].map(nage=>`
-            <div class="stroke-section" style="margin-bottom:15px;">
-                <div class="card-header" style="background:var(--primary)">${nage.toUpperCase()} <div class="score-display">${data.scores[nage]||""}/10</div></div>
-                <div class="card-body">
-                    <div><strong>Points forts:</strong> <br>${(data.forces[nage]||"").replace(/\n/g,"<br>")}</div>
-                    <div><strong>Axes d'amélioration:</strong> <br>${(data.axes[nage]||"").replace(/\n/g,"<br>")}</div>
+            <div class="stroke-section" style="margin-bottom:10px;">
+                <div class="card-header" style="background:var(--primary)">
+                    <span>${nage.toUpperCase()}</span>
+                    <span><div class="score-display">${escapeHTML(data[nage+"Score"])||""}/10</div></span>
                 </div>
-            </div>`).join('')}
+                <div class="card-body">
+                    <div><strong>Points forts:</strong> <br>${escapeHTML(data[nage+"Strengths"])||""}</div>
+                    <div style="margin-top:6px;"><strong>Axes d'amélioration:</strong> <br>${escapeHTML(data[nage+"Improvements"])||""}</div>
+                </div>
+            </div>
+            `).join('')}
         </div>
-    </div>`;
+    </div>
+    `;
     document.getElementById("welcomeNote").style.display="none";
 }
-// Filtre par groupe
+
+// ---- EXPORT PDF ----
+window.exportPDF = function(id){
+    let nageur = nageurs.find(n=>n.id===id);
+    if(!nageur) return;
+    let doc = new window.jspdf.jsPDF();
+    doc.setFontSize(16);
+    doc.setTextColor(30, 90,170);
+    doc.text(`Fiche Technique - ${nageur.swimmerName}`, 15, 15);
+    doc.setFontSize(11);
+    doc.setTextColor(0);
+    let y = 30;
+    doc.text(`Groupe : ${{"competition":"Compétition","pre-competition":"Pré-compétition","apprentissage":"Apprentissage"}[nageur.swimmerGroup]}`, 15, y);
+    doc.text(`Entraîneur : ${nageur.coachName}`, 80, y);
+    y+=7;
+    doc.text(`Date d'analyse : ${nageur.analysisDate}`, 15, y);
+    doc.text(`Score moyen : ${nageur.avgScore}/10`, 80, y);
+    y+=10;
+    ["crawl","dos","brasse","papillon"].forEach(nage=>{
+        doc.setFontSize(13); doc.setTextColor(30,90,170);
+        doc.text(`${nage.toUpperCase()}: (${nageur[nage+"Score"]||""}/10)`, 15, y); y+=7;
+        doc.setFontSize(10); doc.setTextColor(80);
+        doc.text("Points forts :", 15, y);
+        let txt = (nageur[nage+"Strengths"]||"").replace(/\n/g,"; ");
+        doc.setFontSize(10); doc.setTextColor(20);
+        doc.text(txt, 38, y); y+=7;
+        doc.setFontSize(10); doc.setTextColor(80);
+        doc.text("Axes d'amélioration :", 15,y);
+        let txt2 = (nageur[nage+"Improvements"]||"").replace(/\n/g,"; ");
+        doc.setTextColor(20); doc.text(txt2, 53, y); y+=10;
+    });
+    doc.save(`Fiche_${nageur.swimmerName.replace(/ /g,"_")}.pdf`);
+}
+
+// ---- FILTRES ----
 document.getElementById("filterGroup").onchange=function(){
     let val = this.value;
     ["competition-group","pre-competition-group","apprentissage-group"].forEach(grp=>{
@@ -470,7 +633,7 @@ document.getElementById("filterGroup").onchange=function(){
         else el.style.display="none";
     });
 };
-// Search nageurs (filtre par nom)
+// Search (par nom)
 document.getElementById("searchSwimmer").oninput=function(){
     let txt = this.value.toLowerCase();
     document.querySelectorAll('.swimmer-item').forEach(it=>{
