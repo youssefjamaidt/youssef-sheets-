@@ -4,7 +4,509 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Système de Fiches Techniques - Natation Compétition</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --secondary: #34a853;
+            --accent: #fbbc05;
+            --danger: #ea4335;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --border: #dadce0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #0d47a1);
+            color: white;
+            padding: 25px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .swimmer-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .swimmer-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .swimmer-item:hover {
+            background-color: rgba(26, 115, 232, 0.05);
+        }
+        
+        .swimmer-item.active {
+            background-color: rgba(26, 115, 232, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .swimmer-group {
+            margin-bottom: 20px;
+        }
+        
+        .group-title {
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .swimmer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-group {
+            margin-bottom: 15px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+        }
+        
+        .stroke-section {
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .stroke-header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .stroke-content {
+            padding: 15px;
+        }
+        
+        .strength-item, .improvement-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .strength-item {
+            background-color: rgba(52, 168, 83, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .improvement-item {
+            background-color: rgba(251, 188, 5, 0.1);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .proposal-list {
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+        
+        .proposal-list li {
+            margin-bottom: 5px;
+        }
+        
+        .score-display {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .score-high {
+            background-color: var(--secondary);
+        }
+        
+        .score-medium {
+            background-color: var(--accent);
+        }
+        
+        .score-low {
+            background-color: var(--danger);
+        }
+        
+        .notes-section {
+            background-color: rgba(26, 115, 232, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-success {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 95%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .tab-container {
+            margin-top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--border);
+        }
+        
+        .tech-library {
+            background-color: rgba(26, 115, 232, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tech-category {
+            margin-bottom: 15px;
+        }
+        
+        .tech-category-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .tech-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .tech-item {
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tech-item:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tech-item.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tech-details {
+            background-color: white;
+            border-radius: 6px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+            margin-top: 10px;
+        }
+        
+        .strength-badge {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .improvement-badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .swimmer-info {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card-header, .stroke-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 8px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -14,15 +516,1332 @@
         </header>
         
         <div class="dashboard">
-            <!-- Structure HTML principale -->
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <span>Liste des Nageurs</span>
+                        <button class="btn btn-success" id="addSwimmerBtn">+ Ajouter</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="swimmer-list">
+                            <div class="swimmer-group">
+                                <div class="group-title">Compétition (24)</div>
+                                <div class="swimmer-item active" data-id="1">
+                                    <span>AFSAHI IMRANE</span>
+                                    <span class="score-display score-medium">6.5</span>
+                                </div>
+                                <div class="swimmer-item" data-id="2">
+                                    <span>DUPONT LUC</span>
+                                    <span class="score-display score-high">8</span>
+                                </div>
+                                <div class="swimmer-item" data-id="3">
+                                    <span>MARTIN EMMA</span>
+                                    <span class="score-display score-medium">7</span>
+                                </div>
+                                <div class="swimmer-item" data-id="4">
+                                    <span>LEBRUN THOMAS</span>
+                                    <span class="score-display score-low">5</span>
+                                </div>
+                            </div>
+                            
+                            <div class="swimmer-group">
+                                <div class="group-title">Pré-compétition (18)</div>
+                                <div class="swimmer-item" data-id="5">
+                                    <span>ROUSSEAU ANNE</span>
+                                    <span class="score-display score-medium">6</span>
+                                </div>
+                                <div class="swimmer-item" data-id="6">
+                                    <span>PETIT HUGO</span>
+                                    <span class="score-display score-low">4.5</span>
+                                </div>
+                            </div>
+                            
+                            <div class="swimmer-group">
+                                <div class="group-title">Apprentissage (15)</div>
+                                <div class="swimmer-item" data-id="7">
+                                    <span>GIRARD LÉA</span>
+                                    <span class="score-display score-low">4</span>
+                                </div>
+                                <div class="swimmer-item" data-id="8">
+                                    <span>MOREAU NATHAN</span>
+                                    <span class="score-display score-low">3.5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span>Filtres & Recherche</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Rechercher un nageur...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Groupe</label>
+                            <select class="form-control">
+                                <option>Tous les groupes</option>
+                                <option>Compétition</option>
+                                <option>Pré-compétition</option>
+                                <option>Apprentissage</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nage</label>
+                            <select class="form-control">
+                                <option>Toutes les nages</option>
+                                <option>Crawl</option>
+                                <option>Dos</option>
+                                <option>Brasse</option>
+                                <option>Papillon</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div id="swimmerDetail">
+                    <!-- Contenu détaillé du nageur sélectionné -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Fiche Technique - AFSAHI IMRANE</span>
+                            <div>
+                                <button class="btn btn-secondary" id="editSwimmerBtn">Modifier</button>
+                                <button class="btn btn-primary" id="exportPdfBtn">Exporter PDF</button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="swimmer-info">
+                                <div class="info-group">
+                                    <span class="info-label">Nom</span>
+                                    <span class="info-value">AFSAHI IMRANE</span>
+                                </div>
+                                
+                                <div class="info-group">
+                                    <span class="info-label">Groupe</span>
+                                    <span class="info-value">Compétition</span>
+                                </div>
+                                
+                                <div class="info-group">
+                                    <span class="info-label">Date d'analyse</span>
+                                    <span class="info-value">15 octobre 2023</span>
+                                </div>
+                                
+                                <div class="info-group">
+                                    <span class="info-label">Score moyen</span>
+                                    <span class="info-value">
+                                        <div class="score-display score-medium">6.5/10</div>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- CRAWL SECTION -->
+                            <div class="stroke-section">
+                                <div class="stroke-header">
+                                    <span>CRAWL (Nage Libre)</span>
+                                    <div class="score-display score-medium">7/10</div>
+                                </div>
+                                
+                                <div class="stroke-content">
+                                    <div class="strengths">
+                                        <h3>Forces</h3>
+                                        <div class="strength-item">
+                                            Bon alignement corporel général dans l'axe
+                                        </div>
+                                        <div class="strength-item">
+                                            Respiration latérale bien intégrée
+                                        </div>
+                                        <div class="strength-item">
+                                            Bonne amplitude du mouvement de bras
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="improvements">
+                                        <h3>Axes d'amélioration</h3>
+                                        
+                                        <div class="improvement-item">
+                                            <strong>La prise d'appuis</strong>
+                                            <p>La main entre dans l'eau en travers de l'axe de nage, parfois avec le pouce en premier.</p>
+                                            <ul class="proposal-list">
+                                                <li>Utiliser des plaquettes pour ressentir la pression sur la main</li>
+                                                <li>Exercices de "sculling" (godille) en position verticale et horizontale</li>
+                                                <li>Travail d'entrée de main avec focus sur l'index en premier</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-item">
+                                            <strong>La coordination bras/jambes</strong>
+                                            <p>Battements de jambes parfois trop amples ou désynchronisés des rotations du tronc.</p>
+                                            <ul class="proposal-list">
+                                                <li>Battements avec palmes courtes en focalisant sur l'amplitude</li>
+                                                <li>Nager avec un pull-buoy pour isoler le haut du corps</li>
+                                                <li>Exercices de coordination en 6, 4, puis 2 temps de jambes</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- DOS CRAWLE SECTION -->
+                            <div class="stroke-section">
+                                <div class="stroke-header">
+                                    <span>DOS CRAWLÉ</span>
+                                    <div class="score-display score-medium">6.5/10</div>
+                                </div>
+                                
+                                <div class="stroke-content">
+                                    <div class="strengths">
+                                        <h3>Forces</h3>
+                                        <div class="strength-item">
+                                            Battement de jambes efficace et régulier
+                                        </div>
+                                        <div class="strength-item">
+                                            Hips (bassin) et épaules stables
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="improvements">
+                                        <h3>Axes d'amélioration</h3>
+                                        
+                                        <div class="improvement-item">
+                                            <strong>L'entrée de bras et la prise d'appui</strong>
+                                            <p>Entrée de la main dans l'eau en dehors de l'axe de l'épaule.</p>
+                                            <ul class="proposal-list">
+                                                <li>Travailler l'entrée de main dans l'alignement de l'épaule</li>
+                                                <li>Utiliser des repères visuels (drapeaux au bord du bassin)</li>
+                                                <li>Exercices avec un partenaire qui guide l'entrée de main</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- BRASSE SECTION -->
+                            <div class="stroke-section">
+                                <div class="stroke-header">
+                                    <span>BRASSE</span>
+                                    <div class="score-display score-low">5.5/10</div>
+                                </div>
+                                
+                                <div class="stroke-content">
+                                    <div class="strengths">
+                                        <h3>Forces</h3>
+                                        <div class="strength-item">
+                                            Puissance générale apparente lors de la phase de poussée
+                                        </div>
+                                        <div class="strength-item">
+                                            Temps de glissement correct après la poussée
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="improvements">
+                                        <h3>Axes d'amélioration</h3>
+                                        
+                                        <div class="improvement-item">
+                                            <strong>La position du corps et la respiration</strong>
+                                            <p>Tête qui se relève de manière indépendante du tronc pour respirer.</p>
+                                            <ul class="proposal-list">
+                                                <li>Apprendre à se "casser en deux" au niveau des abdos</li>
+                                                <li>Travailler la brasse avec la tête toujours dans l'axe</li>
+                                                <li>Exercices avec focus sur l'émergence des épaules et tête ensemble</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- PAPILLON SECTION -->
+                            <div class="stroke-section">
+                                <div class="stroke-header">
+                                    <span>PAPILLON</span>
+                                    <div class="score-display score-low">5/10</div>
+                                </div>
+                                
+                                <div class="stroke-content">
+                                    <div class="strengths">
+                                        <h3>Forces</h3>
+                                        <div class="strength-item">
+                                            Bonne mobilité des épaules
+                                        </div>
+                                        <div class="strength-item">
+                                            Motivation et engagement visibles dans l'effort
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="improvements">
+                                        <h3>Axes d'amélioration</h3>
+                                        
+                                        <div class="improvement-item">
+                                            <strong>L'ondulation</strong>
+                                            <p>L'ondulation part des genoux et non du tronc/abdomen.</p>
+                                            <ul class="proposal-list">
+                                                <li>Travail sans bras : ondulation sur le ventre, sur le dos</li>
+                                                <li>Exercices avec planche et avec palmes</li>
+                                                <li>Se concentrer sur l'enchaînement "poitrine - bassin - jambes"</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="notes-section">
+                                <h3>Notes techniques & Synthèse</h3>
+                                <p><strong>Points Forts Généraux :</strong> Physique adapté à la natation, compréhension des bases des 4 nages, potentiel d'amélioration technique très important.</p>
+                                <p><strong>Défauts Transversaux :</strong> Fin de propulsion (commun au crawl et au dos), respiration qui désaxe (problème majeur en brasse et papillon).</p>
+                                <p><strong>Priorités d'Entraînement :</strong> 
+                                    <ol>
+                                        <li><strong>Technique pure :</strong> Consacrer 40% de l'entraînement à des exercices techniques ciblés</li>
+                                        <li><strong>Corps de nageur :</strong> Développer la sensibilité aquatique et la conscience corporelle</li>
+                                        <li><strong>Endurance technique :</strong> Maintenir la qualité technique sur des séries longues</li>
+                                    </ol>
+                                </p>
+                                <p><strong>Objectifs à Court Terme :</strong> Améliorer les scores de 1 point sur chaque nage en 3 mois en se concentrant sur les défauts majeurs identifiés.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i>👤</i>
+                    <h3>Aucun nageur sélectionné</h3>
+                    <p>Sélectionnez un nageur dans la liste pour afficher sa fiche technique</p>
+                </div>
+            </div>
         </div>
         
-        <!-- Modal pour ajouter/modifier un nageur -->
-        <div class="modal" id="swimmerModal">
-            <!-- Contenu de la modal -->
+        <footer>
+            <p>Système de Fiches Techniques Individualisées - © 2023 Club de Natation Compétition</p>
+        </footer>
+    </div>
+
+    <!-- Modal pour ajouter/modifier un nageur -->
+    <div class="modal" id="swimmerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Ajouter un nageur</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="info">Informations générales</div>
+                    <div class="tab" data-tab="crawl">Crawl</div>
+                    <div class="tab" data-tab="dos">Dos</div>
+                    <div class="tab" data-tab="brasse">Brasse</div>
+                    <div class="tab" data-tab="papillon">Papillon</div>
+                    <div class="tab" data-tab="synthese">Synthèse</div>
+                </div>
+                
+                <div class="tab-content active" id="info-tab">
+                    <div class="form-group">
+                        <label class="form-label">Nom complet</label>
+                        <input type="text" class="form-control" id="swimmerName">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Groupe</label>
+                        <select class="form-control" id="swimmerGroup">
+                            <option value="competition">Compétition</option>
+                            <option value="pre-competition">Pré-compétition</option>
+                            <option value="apprentissage">Apprentissage</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Date d'analyse</label>
+                        <input type="date" class="form-control" id="analysisDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Entraîneur responsable</label>
+                        <input type="text" class="form-control" id="coachName">
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="crawl-tab">
+                    <div class="form-group">
+                        <label class="form-label">Score Crawl (0-10)</label>
+                        <input type="number" class="form-control" id="crawlScore" min="0" max="10" step="0.5">
+                    </div>
+                    
+                    <div class="tech-library">
+                        <h3>Bibliothèque Technique - CRAWL</h3>
+                        <p>Sélectionnez les éléments techniques à ajouter à la fiche :</p>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Points Forts</div>
+                            <div class="tech-buttons" id="crawl-strengths-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Axes d'Amélioration</div>
+                            <div class="tech-buttons" id="crawl-improvements-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div id="crawl-tech-details">
+                            <!-- Les détails techniques s'afficheront ici -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Forces (éditables)</label>
+                        <textarea class="form-control" id="crawlStrengths" placeholder="Les forces sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Axes d'amélioration (éditables)</label>
+                        <textarea class="form-control" id="crawlImprovements" placeholder="Les axes d'amélioration sélectionnés apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Propositions d'exercices (éditables)</label>
+                        <textarea class="form-control" id="crawlProposals" placeholder="Les propositions d'exercices sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="dos-tab">
+                    <div class="form-group">
+                        <label class="form-label">Score Dos (0-10)</label>
+                        <input type="number" class="form-control" id="dosScore" min="0" max="10" step="0.5">
+                    </div>
+                    
+                    <div class="tech-library">
+                        <h3>Bibliothèque Technique - DOS</h3>
+                        <p>Sélectionnez les éléments techniques à ajouter à la fiche :</p>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Points Forts</div>
+                            <div class="tech-buttons" id="dos-strengths-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Axes d'Amélioration</div>
+                            <div class="tech-buttons" id="dos-improvements-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div id="dos-tech-details">
+                            <!-- Les détails techniques s'afficheront ici -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Forces (éditables)</label>
+                        <textarea class="form-control" id="dosStrengths" placeholder="Les forces sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Axes d'amélioration (éditables)</label>
+                        <textarea class="form-control" id="dosImprovements" placeholder="Les axes d'amélioration sélectionnés apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Propositions d'exercices (éditables)</label>
+                        <textarea class="form-control" id="dosProposals" placeholder="Les propositions d'exercices sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="brasse-tab">
+                    <div class="form-group">
+                        <label class="form-label">Score Brasse (0-10)</label>
+                        <input type="number" class="form-control" id="brasseScore" min="0" max="10" step="0.5">
+                    </div>
+                    
+                    <div class="tech-library">
+                        <h3>Bibliothèque Technique - BRASSE</h3>
+                        <p>Sélectionnez les éléments techniques à ajouter à la fiche :</p>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Points Forts</div>
+                            <div class="tech-buttons" id="brasse-strengths-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Axes d'Amélioration</div>
+                            <div class="tech-buttons" id="brasse-improvements-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div id="brasse-tech-details">
+                            <!-- Les détails techniques s'afficheront ici -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Forces (éditables)</label>
+                        <textarea class="form-control" id="brasseStrengths" placeholder="Les forces sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Axes d'amélioration (éditables)</label>
+                        <textarea class="form-control" id="brasseImprovements" placeholder="Les axes d'amélioration sélectionnés apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Propositions d'exercices (éditables)</label>
+                        <textarea class="form-control" id="brasseProposals" placeholder="Les propositions d'exercices sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="papillon-tab">
+                    <div class="form-group">
+                        <label class="form-label">Score Papillon (0-10)</label>
+                        <input type="number" class="form-control" id="papillonScore" min="0" max="10" step="0.5">
+                    </div>
+                    
+                    <div class="tech-library">
+                        <h3>Bibliothèque Technique - PAPILLON</h3>
+                        <p>Sélectionnez les éléments techniques à ajouter à la fiche :</p>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Points Forts</div>
+                            <div class="tech-buttons" id="papillon-strengths-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="tech-category">
+                            <div class="tech-category-title">Axes d'Amélioration</div>
+                            <div class="tech-buttons" id="papillon-improvements-buttons">
+                                <!-- Les boutons seront générés par JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div id="papillon-tech-details">
+                            <!-- Les détails techniques s'afficheront ici -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Forces (éditables)</label>
+                        <textarea class="form-control" id="papillonStrengths" placeholder="Les forces sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Axes d'amélioration (éditables)</label>
+                        <textarea class="form-control" id="papillonImprovements" placeholder="Les axes d'amélioration sélectionnés apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Propositions d'exercices (éditables)</label>
+                        <textarea class="form-control" id="papillonProposals" placeholder="Les propositions d'exercices sélectionnées apparaîtront ici. Vous pouvez les modifier."></textarea>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="synthese-tab">
+                    <div class="form-group">
+                        <label class="form-label">Points forts généraux</label>
+                        <textarea class="form-control" id="generalStrengths" placeholder="Décrivez les points forts généraux du nageur"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Défauts transversaux</label>
+                        <textarea class="form-control" id="generalWeaknesses" placeholder="Décrivez les défauts communs à plusieurs nages"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Priorités d'entraînement</label>
+                        <textarea class="form-control" id="trainingPriorities" placeholder="Listez les priorités d'entraînement (une par ligne)"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Objectifs à court terme</label>
+                        <textarea class="form-control" id="shortTermGoals" placeholder="Définissez les objectifs à court terme"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="cancelBtn">Annuler</button>
+                <button class="btn btn-primary" id="saveSwimmerBtn">Enregistrer</button>
+            </div>
         </div>
     </div>
-    
-    <script src="assets/js/script.js"></script>
+
+    <script>
+        // Bibliothèque technique complète pour chaque nage
+        const technicalLibrary = {
+            crawl: {
+                strengths: [
+                    {
+                        id: "crawl-strength-1",
+                        title: "Alignement corporel",
+                        description: "Bon alignement du corps dans l'axe de nage, réduisant la résistance à l'avancement.",
+                        proposals: [
+                            "Exercices de gainage en position hydrodynamique",
+                            "Nage avec planche en focalisant sur l'alignement tête-tronc-jambes",
+                            "Visualisation mentale de la position du corps"
+                        ]
+                    },
+                    {
+                        id: "crawl-strength-2",
+                        title: "Respiration latérale",
+                        description: "Respiration bien synchronisée et discrète, sans perturber l'alignement du corps.",
+                        proposals: [
+                            "Exercices de respiration tous les 3, 5, 7 temps",
+                            "Travail avec snorkel pour isoler la technique de respiration",
+                            "Respiration en position latérale avec planche"
+                        ]
+                    },
+                    {
+                        id: "crawl-strength-3",
+                        title: "Amplitude de mouvement",
+                        description: "Bonne amplitude du mouvement de bras, permettant une propulsion efficace.",
+                        proposals: [
+                            "Nage avec élastiques pour développer la force en amplitude",
+                            "Exercices de rattrapé pour travailler l'allongement",
+                            "Travail avec plaquettes pour ressentir la pression sur toute la surface"
+                        ]
+                    },
+                    {
+                        id: "crawl-strength-4",
+                        title: "Roulis des épaules",
+                        description: "Roulis des épaules naturel et fluide, facilitant la respiration et la propulsion.",
+                        proposals: [
+                            "Exercices de roulis avec planche en position latérale",
+                            "Nage avec les poings fermés pour accentuer le roulis",
+                            "Travail en amplitude réduite pour développer la mobilité"
+                        ]
+                    },
+                    {
+                        id: "crawl-strength-5",
+                        title: "Battement de jambes",
+                        description: "Battement de jambes efficace et économique, contribuant à la stabilité et à la propulsion.",
+                        proposals: [
+                            "Battements avec palmes pour développer la puissance",
+                            "Exercices de battements variés (petits/grands)",
+                            "Travail avec planche en focalisant sur l'amplitude"
+                        ]
+                    }
+                ],
+                improvements: [
+                    {
+                        id: "crawl-improvement-1",
+                        title: "Prise d'appuis",
+                        description: "La main entre dans l'eau en travers de l'axe de nage, créant des turbulences et réduisant l'efficacité propulsive.",
+                        proposals: [
+                            "Utiliser des plaquettes pour ressentir la pression sur la main",
+                            "Exercices de 'sculling' (godille) en position verticale et horizontale",
+                            "Travail d'entrée de main avec focus sur l'index en premier",
+                            "Exercices avec élastiques pour renforcer la phase d'accrochage"
+                        ]
+                    },
+                    {
+                        id: "crawl-improvement-2",
+                        title: "Coordination bras/jambes",
+                        description: "Battements de jambes parfois trop amples ou désynchronisés des rotations du tronc.",
+                        proposals: [
+                            "Battements avec palmes courtes en focalisant sur l'amplitude",
+                            "Nager avec un pull-buoy pour isoler le haut du corps",
+                            "Exercices de coordination en 6, 4, puis 2 temps de jambes",
+                            "Travail avec planche en position latérale pour améliorer la rotation"
+                        ]
+                    },
+                    {
+                        id: "crawl-improvement-3",
+                        title: "Fin de poussée",
+                        description: "Le bras termine sa propulsion avant la hanche, coupant prématurément la poussée.",
+                        proposals: [
+                            "Visualiser 'pousser l'eau jusqu'à la cuisse'",
+                            "Exercices de nage avec les poings fermés",
+                            "Travail avec élastique résistant en fin de mouvement",
+                            "Nage avec plaquettes très petites pour forcer une poussée complète"
+                        ]
+                    },
+                    {
+                        id: "crawl-improvement-4",
+                        title: "Respiration haute",
+                        description: "Tête qui se relève trop pour respirer, cassant l'alignement du corps.",
+                        proposals: [
+                            "Exercices de respiration avec une œillère sur le front",
+                            "Respiration en regardant vers le bord et non vers le plafond",
+                            "Travail avec partenaire qui guide la position de la tête",
+                            "Exercices de respiration en position latérale"
+                        ]
+                    },
+                    {
+                        id: "crawl-improvement-5",
+                        title: "Rythme irrégulier",
+                        description: "Rythme de nage irrégulier avec accélérations et ralentissements non contrôlés.",
+                        proposals: [
+                            "Nage avec métronome pour caler un rythme constant",
+                            "Exercices de fractionné pour développer le sens du rythme",
+                            "Travail en focalisant sur la régularité plutôt que la vitesse",
+                            "Utilisation de repères visuels pour maintenir une vitesse constante"
+                        ]
+                    }
+                ]
+            },
+            dos: {
+                strengths: [
+                    {
+                        id: "dos-strength-1",
+                        title: "Battement de jambes",
+                        description: "Battement de jambes efficace et régulier, contribuant à la propulsion et à la stabilité.",
+                        proposals: [
+                            "Battements avec palmes pour développer la puissance",
+                            "Exercices de battements sur le dos avec planche",
+                            "Travail en position verticale pour renforcer les jambes"
+                        ]
+                    },
+                    {
+                        id: "dos-strength-2",
+                        title: "Stabilité du bassin",
+                        description: "Bassin et épaules stables, limitant les mouvements latéraux excessifs.",
+                        proposals: [
+                            "Exercices de gainage spécifique pour le dos",
+                            "Nage avec pull-buoy pour isoler la stabilité du tronc",
+                            "Travail en amplitude réduite pour développer le contrôle"
+                        ]
+                    },
+                    {
+                        id: "dos-strength-3",
+                        title: "Position de la tête",
+                        description: "Tête bien positionnée, regard vers le haut, favorisant l'alignement général.",
+                        proposals: [
+                            "Exercices de nage en regardant un point fixe au plafond",
+                            "Travail avec repères visuels (lignes au plafond)",
+                            "Pratique avec feedback visuel constant"
+                        ]
+                    }
+                ],
+                improvements: [
+                    {
+                        id: "dos-improvement-1",
+                        title: "Entrée de bras et prise d'appui",
+                        description: "Entrée de la main dans l'eau en dehors de l'axe de l'épaule, réduisant l'efficacité propulsive.",
+                        proposals: [
+                            "Travailler l'entrée de main dans l'alignement de l'épaule",
+                            "Utiliser des repères visuels (drapeaux au bord du bassin)",
+                            "Exercices avec un partenaire qui guide l'entrée de main",
+                            "Travail au mur pour mémoriser la position correcte"
+                        ]
+                    },
+                    {
+                        id: "dos-improvement-2",
+                        title: "Rythme de nage",
+                        description: "Manque de continuité dans le mouvement avec un 'point mort' entre les bras.",
+                        proposals: [
+                            "Nager en 6 temps de jambes strictes",
+                            "Exercices de 'dos rattrapé' pour forcer la continuité",
+                            "Travail avec métronome pour caler un rythme régulier",
+                            "Nager en focalisant sur le transfert d'énergie d'un bras à l'autre"
+                        ]
+                    },
+                    {
+                        id: "dos-improvement-3",
+                        title: "Poussée finale",
+                        description: "La poussée s'arrête trop tôt, la main quitte l'eau sans pousser complètement.",
+                        proposals: [
+                            "Insister sur la rotation de la paume vers l'extérieur en fin de mouvement",
+                            "Exercices de poussée accentuée avec résistance",
+                            "Visualisation 'pousser jusqu'au bout des doigts'",
+                            "Travail avec élastique pour renforcer la fin de poussée"
+                        ]
+                    },
+                    {
+                        id: "dos-improvement-4",
+                        title: "Rotation excessive",
+                        description: "Rotation excessive des épaules et du bassin, créant une résistance latérale.",
+                        proposals: [
+                            "Exercices de nage avec pull-buoy pour limiter la rotation",
+                            "Travail en focalisant sur un roulis contrôlé (45°)",
+                            "Utilisation d'un partenaire pour corriger visuellement la rotation",
+                            "Pratique avec feedback kinesthésique"
+                        ]
+                    }
+                ]
+            },
+            brasse: {
+                strengths: [
+                    {
+                        id: "brasse-strength-1",
+                        title: "Puissance de poussée",
+                        description: "Puissance générale apparente lors de la phase de poussée des bras.",
+                        proposals: [
+                            "Exercices de poussée avec élastiques pour développer la force",
+                            "Travail avec plaquettes pour augmenter la résistance",
+                            "Nage avec focus sur l'accélération progressive"
+                        ]
+                    },
+                    {
+                        id: "brasse-strength-2",
+                        title: "Temps de glissement",
+                        description: "Temps de glissement correct après la poussée, permettant une nage économique.",
+                        proposals: [
+                            "Exercices de glissement avec comptage progressif",
+                            "Travail en focalisant sur la position hydrodynamique",
+                            "Pratique avec feedback sur la durée du glissement"
+                        ]
+                    }
+                ],
+                improvements: [
+                    {
+                        id: "brasse-improvement-1",
+                        title: "Position du corps et respiration",
+                        description: "Tête qui se relève de manière indépendante du tronc pour respirer, créant une cassure et augmentant la résistance.",
+                        proposals: [
+                            "Apprendre à se 'casser en deux' au niveau des abdos",
+                            "Travailler la brasse avec la tête toujours dans l'axe",
+                            "Exercices avec focus sur l'émergence des épaules et tête ensemble",
+                            "Utilisation d'un snorkel pour isoler le mouvement du corps"
+                        ]
+                    },
+                    {
+                        id: "brasse-improvement-2",
+                        title: "Ciseau de jambes",
+                        description: "Ciseau trop large ou asymétrique, talons ne remontant pas suffisamment vers les fesses.",
+                        proposals: [
+                            "Travail au bord du bassin pour corriger l'amplitude et la symétrie",
+                            "Insister sur la flexion talons-fesses",
+                            "Nage avec une planche pour isoler le mouvement de jambes",
+                            "Exercices avec résistance pour renforcer les adducteurs"
+                        ]
+                    },
+                    {
+                        id: "brasse-improvement-3",
+                        title: "Timing global",
+                        description: "Séquence 'Traction - Respiration - Jambes - Extension' mal calibrée.",
+                        proposals: [
+                            "Répéter le mantra 'Tirer - Souffler - Pousser - Glisser'",
+                            "Exercices où l'on maintient la position bras tendus avant de lancer les jambes",
+                            "Travail par phases avec arrêts pour vérifier les positions",
+                            "Utilisation de vidéo pour analyser et corriger le timing"
+                        ]
+                    },
+                    {
+                        id: "brasse-improvement-4",
+                        title: "Amplitude de traction",
+                        description: "Traction des bras trop large ou trop profonde, créant une résistance excessive.",
+                        proposals: [
+                            "Exercices de traction avec élastiques limitant l'amplitude",
+                            "Travail en focalisant sur une traction en 'Y'",
+                            "Utilisation de repères visuels pour contrôler l'amplitude",
+                            "Pratique avec feedback immédiat sur la largeur de traction"
+                        ]
+                    }
+                ]
+            },
+            papillon: {
+                strengths: [
+                    {
+                        id: "papillon-strength-1",
+                        title: "Mobilité des épaules",
+                        description: "Bonne mobilité des épaules, permettant une récupération aérienne fluide.",
+                        proposals: [
+                            "Exercices d'assouplissement spécifiques pour les épaules",
+                            "Travail de mobilité avec élastiques",
+                            "Pratique régulière pour maintenir la souplesse"
+                        ]
+                    },
+                    {
+                        id: "papillon-strength-2",
+                        title: "Engagement mental",
+                        description: "Motivation et engagement visibles dans l'effort, essentiels pour cette nage exigeante.",
+                        proposals: [
+                            "Travail de visualisation mentale de la nage parfaite",
+                            "Exercices de renforcement de la confiance en soi",
+                            "Pratique avec objectifs progressifs et réalisables"
+                        ]
+                    }
+                ],
+                improvements: [
+                    {
+                        id: "papillon-improvement-1",
+                        title: "Ondulation",
+                        description: "L'ondulation part des genoux et non du tronc/abdomen, réduisant son efficacité.",
+                        proposals: [
+                            "Travail sans bras : ondulation sur le ventre, sur le dos",
+                            "Exercices avec planche et avec palmes",
+                            "Se concentrer sur l'enchaînement 'poitrine - bassin - jambes'",
+                            "Pratique au mur pour ressentir l'ondulation complète"
+                        ]
+                    },
+                    {
+                        id: "papillon-improvement-2",
+                        title: "Respiration",
+                        description: "Tête qui se lève trop tôt et trop haut pour respirer, cassant l'ondulation et enfonçant le bas du corps.",
+                        proposals: [
+                            "Apprendre à regarder vers l'avant/bas et non vers le plafond",
+                            "Exercices de papillon 1 bras pour faciliter la respiration",
+                            "Travail avec focus sur le menton qui effleure la surface",
+                            "Exercices de respiration tous les 2 ou 3 cycles"
+                        ]
+                    },
+                    {
+                        id: "papillon-improvement-3",
+                        title: "Coordination bras/jambes",
+                        description: "Désynchronisation entre le mouvement des bras et l'ondulation.",
+                        proposals: [
+                            "Travailler le papillon avec 2, 3, puis 1 ondulation par cycle",
+                            "Utiliser le modèle 'Pieds - Main - Pieds - Main'",
+                            "Exercices de brasse papillon pour améliorer la coordination",
+                            "Travail avec élastiques pour renforcer la synchronisation"
+                        ]
+                    },
+                    {
+                        id: "papillon-improvement-4",
+                        title: "Récupération aérienne",
+                        description: "Récupération aérienne trop basse ou bras trop tendus, créant une résistance.",
+                        proposals: [
+                            "Exercices de récupération avec élastiques pour sentir la trajectoire",
+                            "Travail en focalisant sur des bras relâchés et une trajectoire basse",
+                            "Pratique avec feedback visuel sur la hauteur de récupération",
+                            "Exercices de renforcement spécifique pour les épaules"
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Données des nageurs (simulées)
+        const swimmersData = {
+            1: {
+                name: "AFSAHI IMRANE",
+                group: "Compétition",
+                analysisDate: "2023-10-15",
+                coach: "Entraîneur Principal",
+                scores: {
+                    crawl: 7,
+                    dos: 6.5,
+                    brasse: 5.5,
+                    papillon: 5
+                },
+                crawl: {
+                    strengths: [
+                        "Bon alignement corporel général dans l'axe",
+                        "Respiration latérale bien intégrée",
+                        "Bonne amplitude du mouvement de bras"
+                    ],
+                    improvements: [
+                        {
+                            title: "La prise d'appuis",
+                            description: "La main entre dans l'eau en travers de l'axe de nage, parfois avec le pouce en premier.",
+                            proposals: [
+                                "Utiliser des plaquettes pour ressentir la pression sur la main",
+                                "Exercices de 'sculling' (godille) en position verticale et horizontale",
+                                "Travail d'entrée de main avec focus sur l'index en premier"
+                            ]
+                        },
+                        {
+                            title: "La coordination bras/jambes",
+                            description: "Battements de jambes parfois trop amples ou désynchronisés des rotations du tronc.",
+                            proposals: [
+                                "Battements avec palmes courtes en focalisant sur l'amplitude",
+                                "Nager avec un pull-buoy pour isoler le haut du corps",
+                                "Exercices de coordination en 6, 4, puis 2 temps de jambes"
+                            ]
+                        }
+                    ]
+                },
+                dos: {
+                    strengths: [
+                        "Battement de jambes efficace et régulier",
+                        "Hips (bassin) et épaules stables"
+                    ],
+                    improvements: [
+                        {
+                            title: "L'entrée de bras et la prise d'appui",
+                            description: "Entrée de la main dans l'eau en dehors de l'axe de l'épaule.",
+                            proposals: [
+                                "Travailler l'entrée de main dans l'alignement de l'épaule",
+                                "Utiliser des repères visuels (drapeaux au bord du bassin)",
+                                "Exercices avec un partenaire qui guide l'entrée de main"
+                            ]
+                        }
+                    ]
+                },
+                brasse: {
+                    strengths: [
+                        "Puissance générale apparente lors de la phase de poussée",
+                        "Temps de glissement correct après la poussée"
+                    ],
+                    improvements: [
+                        {
+                            title: "La position du corps et la respiration",
+                            description: "Tête qui se relève de manière indépendante du tronc pour respirer.",
+                            proposals: [
+                                "Apprendre à se 'casser en deux' au niveau des abdos",
+                                "Travailler la brasse avec la tête toujours dans l'axe",
+                                "Exercices avec focus sur l'émergence des épaules et tête ensemble"
+                            ]
+                        }
+                    ]
+                },
+                papillon: {
+                    strengths: [
+                        "Bonne mobilité des épaules",
+                        "Motivation et engagement visibles dans l'effort"
+                    ],
+                    improvements: [
+                        {
+                            title: "L'ondulation",
+                            description: "L'ondulation part des genoux et non du tronc/abdomen.",
+                            proposals: [
+                                "Travail sans bras : ondulation sur le ventre, sur le dos",
+                                "Exercices avec planche et avec palmes",
+                                "Se concentrer sur l'enchaînement 'poitrine - bassin - jambes'"
+                            ]
+                        }
+                    ]
+                },
+                synthesis: {
+                    generalStrengths: "Physique adapté à la natation, compréhension des bases des 4 nages, potentiel d'amélioration technique très important.",
+                    generalWeaknesses: "Fin de propulsion (commun au crawl et au dos), respiration qui désaxe (problème majeur en brasse et papillon).",
+                    trainingPriorities: [
+                        "Technique pure : Consacrer 40% de l'entraînement à des exercices techniques ciblés",
+                        "Corps de nageur : Développer la sensibilité aquatique et la conscience corporelle",
+                        "Endurance technique : Maintenir la qualité technique sur des séries longues"
+                    ],
+                    shortTermGoals: "Améliorer les scores de 1 point sur chaque nage en 3 mois en se concentrant sur les défauts majeurs identifiés."
+                }
+            }
+            // Les autres nageurs seraient définis de la même manière
+        };
+
+        // Éléments DOM
+        const swimmerItems = document.querySelectorAll('.swimmer-item');
+        const swimmerDetail = document.getElementById('swimmerDetail');
+        const emptyState = document.getElementById('emptyState');
+        const addSwimmerBtn = document.getElementById('addSwimmerBtn');
+        const editSwimmerBtn = document.getElementById('editSwimmerBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        const swimmerModal = document.getElementById('swimmerModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModal = document.querySelector('.close');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveSwimmerBtn = document.getElementById('saveSwimmerBtn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Fonction pour initialiser la bibliothèque technique
+        function initTechnicalLibrary() {
+            // Pour chaque nage
+            for (const stroke in technicalLibrary) {
+                // Points forts
+                const strengthsContainer = document.getElementById(`${stroke}-strengths-buttons`);
+                technicalLibrary[stroke].strengths.forEach(item => {
+                    const button = document.createElement('div');
+                    button.className = 'tech-item';
+                    button.textContent = item.title;
+                    button.dataset.id = item.id;
+                    button.addEventListener('click', function() {
+                        toggleTechItem(this, stroke, 'strength');
+                        showTechDetails(item, stroke);
+                    });
+                    strengthsContainer.appendChild(button);
+                });
+                
+                // Axes d'amélioration
+                const improvementsContainer = document.getElementById(`${stroke}-improvements-buttons`);
+                technicalLibrary[stroke].improvements.forEach(item => {
+                    const button = document.createElement('div');
+                    button.className = 'tech-item';
+                    button.textContent = item.title;
+                    button.dataset.id = item.id;
+                    button.addEventListener('click', function() {
+                        toggleTechItem(this, stroke, 'improvement');
+                        showTechDetails(item, stroke);
+                    });
+                    improvementsContainer.appendChild(button);
+                });
+            }
+        }
+
+        // Fonction pour basculer la sélection d'un élément technique
+        function toggleTechItem(element, stroke, type) {
+            element.classList.toggle('active');
+            
+            // Mettre à jour les zones de texte
+            updateTextAreas(stroke);
+        }
+
+        // Fonction pour afficher les détails d'un élément technique
+        function showTechDetails(item, stroke) {
+            const detailsContainer = document.getElementById(`${stroke}-tech-details`);
+            detailsContainer.innerHTML = `
+                <div class="tech-details">
+                    <h4>${item.title}</h4>
+                    <p>${item.description}</p>
+                    <div class="tech-category-title">Exercices recommandés :</div>
+                    <ul>
+                        ${item.proposals.map(proposal => `<li>${proposal}</li>`).join('')}
+                    </ul>
+                    <button class="btn btn-small btn-primary" onclick="addToTextAreas('${stroke}', '${item.id}')">
+                        Ajouter aux zones de texte
+                    </button>
+                </div>
+            `;
+        }
+
+        // Fonction pour ajouter un élément aux zones de texte
+        function addToTextAreas(stroke, itemId) {
+            // Trouver l'élément dans la bibliothèque
+            let item = null;
+            let type = '';
+            
+            for (const t of ['strengths', 'improvements']) {
+                const found = technicalLibrary[stroke][t].find(i => i.id === itemId);
+                if (found) {
+                    item = found;
+                    type = t;
+                    break;
+                }
+            }
+            
+            if (!item) return;
+            
+            // Ajouter aux zones de texte appropriées
+            if (type === 'strengths') {
+                const textarea = document.getElementById(`${stroke}Strengths`);
+                const currentValue = textarea.value;
+                textarea.value = currentValue + (currentValue ? '\n' : '') + `• ${item.title}: ${item.description}`;
+            } else {
+                const improvementsTextarea = document.getElementById(`${stroke}Improvements`);
+                const proposalsTextarea = document.getElementById(`${stroke}Proposals`);
+                
+                const currentImprovements = improvementsTextarea.value;
+                improvementsTextarea.value = currentImprovements + (currentImprovements ? '\n' : '') + `• ${item.title}: ${item.description}`;
+                
+                const currentProposals = proposalsTextarea.value;
+                proposalsTextarea.value = currentProposals + (currentProposals ? '\n' : '') + item.proposals.map(p => `- ${p}`).join('\n');
+            }
+        }
+
+        // Fonction pour mettre à jour les zones de texte basées sur la sélection
+        function updateTextAreas(stroke) {
+            const strengthsTextarea = document.getElementById(`${stroke}Strengths`);
+            const improvementsTextarea = document.getElementById(`${stroke}Improvements`);
+            const proposalsTextarea = document.getElementById(`${stroke}Proposals`);
+            
+            // Réinitialiser les zones
+            strengthsTextarea.value = '';
+            improvementsTextarea.value = '';
+            proposalsTextarea.value = '';
+            
+            // Points forts sélectionnés
+            const selectedStrengths = document.querySelectorAll(`#${stroke}-strengths-buttons .tech-item.active`);
+            selectedStrengths.forEach(button => {
+                const itemId = button.dataset.id;
+                const item = technicalLibrary[stroke].strengths.find(s => s.id === itemId);
+                if (item) {
+                    strengthsTextarea.value += (strengthsTextarea.value ? '\n' : '') + `• ${item.title}: ${item.description}`;
+                }
+            });
+            
+            // Axes d'amélioration sélectionnés
+            const selectedImprovements = document.querySelectorAll(`#${stroke}-improvements-buttons .tech-item.active`);
+            selectedImprovements.forEach(button => {
+                const itemId = button.dataset.id;
+                const item = technicalLibrary[stroke].improvements.find(i => i.id === itemId);
+                if (item) {
+                    improvementsTextarea.value += (improvementsTextarea.value ? '\n' : '') + `• ${item.title}: ${item.description}`;
+                    proposalsTextarea.value += (proposalsTextarea.value ? '\n' : '') + item.proposals.map(p => `- ${p}`).join('\n');
+                }
+            });
+        }
+
+        // Fonction pour afficher les détails d'un nageur
+        function displaySwimmerDetails(swimmerId) {
+            const swimmer = swimmersData[swimmerId];
+            if (!swimmer) {
+                emptyState.style.display = 'block';
+                swimmerDetail.style.display = 'none';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            swimmerDetail.style.display = 'block';
+            
+            // Mettre à jour les informations générales
+            document.querySelector('.card-header span').textContent = `Fiche Technique - ${swimmer.name}`;
+            document.querySelector('.info-value:first-child').textContent = swimmer.name;
+            document.querySelectorAll('.info-value')[1].textContent = swimmer.group;
+            document.querySelectorAll('.info-value')[2].textContent = formatDate(swimmer.analysisDate);
+            
+            // Calculer et afficher le score moyen
+            const avgScore = (swimmer.scores.crawl + swimmer.scores.dos + swimmer.scores.brasse + swimmer.scores.papillon) / 4;
+            const avgScoreElement = document.querySelectorAll('.info-value')[3];
+            avgScoreElement.innerHTML = `<div class="score-display ${getScoreClass(avgScore)}">${avgScore.toFixed(1)}/10</div>`;
+            
+            // Mettre à jour chaque section de nage
+            updateStrokeSection('crawl', swimmer.crawl, swimmer.scores.crawl);
+            updateStrokeSection('dos', swimmer.dos, swimmer.scores.dos);
+            updateStrokeSection('brasse', swimmer.brasse, swimmer.scores.brasse);
+            updateStrokeSection('papillon', swimmer.papillon, swimmer.scores.papillon);
+            
+            // Mettre à jour la synthèse
+            updateSynthesis(swimmer.synthesis);
+        }
+
+        // Fonction pour mettre à jour une section de nage
+        function updateStrokeSection(stroke, data, score) {
+            const section = document.querySelector(`.stroke-section:nth-child(${getStrokeIndex(stroke)})`);
+            const header = section.querySelector('.stroke-header');
+            const content = section.querySelector('.stroke-content');
+            
+            // Mettre à jour le score
+            header.querySelector('.score-display').className = `score-display ${getScoreClass(score)}`;
+            header.querySelector('.score-display').textContent = `${score}/10`;
+            
+            // Mettre à jour les forces
+            const strengthsContainer = content.querySelector('.strengths');
+            strengthsContainer.innerHTML = '<h3>Forces</h3>';
+            data.strengths.forEach(strength => {
+                const div = document.createElement('div');
+                div.className = 'strength-item';
+                div.textContent = strength;
+                strengthsContainer.appendChild(div);
+            });
+            
+            // Mettre à jour les axes d'amélioration
+            const improvementsContainer = content.querySelector('.improvements');
+            improvementsContainer.innerHTML = '<h3>Axes d\'amélioration</h3>';
+            data.improvements.forEach(improvement => {
+                const div = document.createElement('div');
+                div.className = 'improvement-item';
+                
+                const title = document.createElement('strong');
+                title.textContent = improvement.title;
+                div.appendChild(title);
+                
+                const desc = document.createElement('p');
+                desc.textContent = improvement.description;
+                div.appendChild(desc);
+                
+                const list = document.createElement('ul');
+                list.className = 'proposal-list';
+                improvement.proposals.forEach(proposal => {
+                    const li = document.createElement('li');
+                    li.textContent = proposal;
+                    list.appendChild(li);
+                });
+                div.appendChild(list);
+                
+                improvementsContainer.appendChild(div);
+            });
+        }
+
+        // Fonction pour mettre à jour la synthèse
+        function updateSynthesis(synthesis) {
+            const notesSection = document.querySelector('.notes-section');
+            notesSection.innerHTML = `
+                <h3>Notes techniques & Synthèse</h3>
+                <p><strong>Points Forts Généraux :</strong> ${synthesis.generalStrengths}</p>
+                <p><strong>Défauts Transversaux :</strong> ${synthesis.generalWeaknesses}</p>
+                <p><strong>Priorités d'Entraînement :</strong> 
+                    <ol>
+                        ${synthesis.trainingPriorities.map(priority => `<li>${priority}</li>`).join('')}
+                    </ol>
+                </p>
+                <p><strong>Objectifs à Court Terme :</strong> ${synthesis.shortTermGoals}</p>
+            `;
+        }
+
+        // Fonctions utilitaires
+        function getStrokeIndex(stroke) {
+            const strokes = {'crawl': 2, 'dos': 3, 'brasse': 4, 'papillon': 5};
+            return strokes[stroke];
+        }
+
+        function getScoreClass(score) {
+            if (score >= 7) return 'score-high';
+            if (score >= 5) return 'score-medium';
+            return 'score-low';
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('fr-FR', options);
+        }
+
+        // Gestion des événements
+        swimmerItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Retirer la classe active de tous les éléments
+                swimmerItems.forEach(i => i.classList.remove('active'));
+                // Ajouter la classe active à l'élément cliqué
+                this.classList.add('active');
+                // Afficher les détails du nageur
+                const swimmerId = this.getAttribute('data-id');
+                displaySwimmerDetails(swimmerId);
+            });
+        });
+
+        // Gestion des onglets dans la modal
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Retirer la classe active de tous les onglets et contenus
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Ajouter la classe active à l'onglet et au contenu sélectionnés
+                this.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+
+        // Ouvrir la modal pour ajouter un nageur
+        addSwimmerBtn.addEventListener('click', function() {
+            modalTitle.textContent = "Ajouter un nageur";
+            swimmerModal.style.display = 'flex';
+        });
+
+        // Ouvrir la modal pour modifier un nageur
+        editSwimmerBtn.addEventListener('click', function() {
+            modalTitle.textContent = "Modifier un nageur";
+            swimmerModal.style.display = 'flex';
+        });
+
+        // Fermer la modal
+        closeModal.addEventListener('click', function() {
+            swimmerModal.style.display = 'none';
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            swimmerModal.style.display = 'none';
+        });
+
+        // Enregistrer le nageur
+        saveSwimmerBtn.addEventListener('click', function() {
+            // Ici, vous implémenteriez la logique pour sauvegarder les données
+            alert('Fonctionnalité de sauvegarde à implémenter. En production, cela enregistrerait les données dans une base de données.');
+            swimmerModal.style.display = 'none';
+        });
+
+        // Exporter en PDF
+        exportPdfBtn.addEventListener('click', function() {
+            alert('Fonctionnalité d\'export PDF à implémenter. Pour le moment, vous pouvez utiliser l\'impression du navigateur (Ctrl+P).');
+        });
+
+        // Fermer la modal en cliquant en dehors
+        window.addEventListener('click', function(event) {
+            if (event.target === swimmerModal) {
+                swimmerModal.style.display = 'none';
+            }
+        });
+
+        // Initialiser la bibliothèque technique
+        initTechnicalLibrary();
+
+        // Afficher le premier nageur par défaut
+        displaySwimmerDetails(1);
+    </script>
 </body>
 </html>
